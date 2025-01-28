@@ -2,193 +2,192 @@ import datetime
 import openpyxl
 from openpyxl import Workbook
 
-class AkcjaRatownicza:
-    def __init__(self, rodzaj_zdarzenia, pojazdy, miejscowosc, data, warunki_atmosferyczne, temperatura, pora_roku):
-        self.rodzaj_zdarzenia = rodzaj_zdarzenia
-        self.pojazdy = pojazdy
-        self.miejscowosc = miejscowosc
-        self.data = data
-        self.warunki_atmosferyczne = warunki_atmosferyczne
-        self.temperatura = temperatura
-        self.pora_roku = pora_roku
+class RescueAction:
+    def __init__(self, incident_type, vehicles, location, date, weather_conditions, temperature, season):
+        self.incident_type = incident_type
+        self.vehicles = vehicles
+        self.location = location
+        self.date = date
+        self.weather_conditions = weather_conditions
+        self.temperature = temperature
+        self.season = season
 
-    def wyswietl_informacje(self):
-        print(f"Rodzaj zdarzenia: {self.rodzaj_zdarzenia}")
-        print(f"Pojazdy: {', '.join(self.pojazdy)}")
-        print(f"Miejscowość: {self.miejscowosc}")
-        print(f"Data: {self.data}")
-        print(f"Warunki atmosferyczne: {', '.join(self.warunki_atmosferyczne)}")
-        print(f"Temperatura: {self.temperatura}")
-        print(f"Pora roku: {self.pora_roku}")
+    def display_info(self):
+        print(f"Incident Type: {self.incident_type}")
+        print(f"Vehicles: {', '.join(self.vehicles)}")
+        print(f"Location: {self.location}")
+        print(f"Date: {self.date}")
+        print(f"Weather Conditions: {', '.join(self.weather_conditions)}")
+        print(f"Temperature: {self.temperature}")
+        print(f"Season: {self.season}")
 
-def wprowadz_date():
+
+def enter_date():
     while True:
-        data_input = input("Podaj datę (RRRR-MM-DD): ")
+        date_input = input("Enter date (YYYY-MM-DD): ")
         try:
-            data = datetime.datetime.strptime(data_input, "%Y-%m-%d").date()
-            return data
+            date = datetime.datetime.strptime(date_input, "%Y-%m-%d").date()
+            return date
         except ValueError:
-            print("Błędny format daty. Spróbuj ponownie.")
+            print("Invalid date format. Please try again.")
 
-def zapisz_do_excel(akcje, nazwa_pliku="akcje_ratownicze.xlsx"):
+
+def save_to_excel(actions, filename="rescue_actions.xlsx"):
     try:
-        # Spróbuj otworzyć istniejący plik Excel
-        workbook = openpyxl.load_workbook(nazwa_pliku)
+        # Try to open an existing Excel file
+        workbook = openpyxl.load_workbook(filename)
         sheet = workbook.active
     except FileNotFoundError:
-        # Jeśli plik nie istnieje, utwórz nowy plik
+        # Create a new file if it doesn't exist
         workbook = Workbook()
         sheet = workbook.active
-        # Nagłówki kolumn (tylko jeśli plik został utworzony nowy)
-        sheet.append(["Rodzaj zdarzenia", "Pojazdy", "Miejscowość", "Data", "Warunki atmosferyczne", "Temperatura", "Pora_roku"])
+        # Column headers (only if the file is newly created)
+        sheet.append(["Incident Type", "Vehicles", "Location", "Date", "Weather Conditions", "Temperature", "Season"])
 
-    for akcja in akcje:
-        # Dostosuj formatowanie pojazdów i warunków atmosferycznych
-        pojazdy = ', '.join(akcja.pojazdy)
-        warunki_atmosferyczne = ', '.join(akcja.warunki_atmosferyczne)
-        sheet.append([akcja.rodzaj_zdarzenia, pojazdy, akcja.miejscowosc, akcja.data, warunki_atmosferyczne, akcja.temperatura, akcja.pora_roku])
+    for action in actions:
+        vehicles = ', '.join(action.vehicles)
+        weather_conditions = ', '.join(action.weather_conditions)
+        sheet.append([action.incident_type, vehicles, action.location, action.date, weather_conditions, action.temperature, action.season])
 
-    workbook.save(nazwa_pliku)
+    workbook.save(filename)
 
 
-def wczytaj_z_excel(nazwa_pliku="akcje_ratownicze.xlsx"):
-    akcje = []
+def load_from_excel(filename="rescue_actions.xlsx"):
+    actions = []
     try:
-        workbook = openpyxl.load_workbook(nazwa_pliku)
+        workbook = openpyxl.load_workbook(filename)
         sheet = workbook.active
 
         for row in sheet.iter_rows(min_row=2, values_only=True):
-            akcje.append(AkcjaRatownicza(*row))
+            actions.append(RescueAction(*row))
 
     except FileNotFoundError:
-        print("Plik nie istnieje. Tworzony nowy plik.")
-    return akcje
+        print("File does not exist. Creating a new file.")
+    return actions
+
 
 if __name__ == "__main__":
-    akcje_ratownicze = wczytaj_z_excel()
+    rescue_actions = load_from_excel()
 
     try:
         while True:
-            print("\n1. Dodaj nową akcję ratowniczą")
-            print("2. Wyświetl wszystkie akcje ratownicze")
-            print("3. Zapisz do pliku Excel")
-            print("4. Zakończ")
+            print("\n1. Add a new rescue action")
+            print("2. Display all rescue actions")
+            print("3. Save to Excel file")
+            print("4. Exit")
 
-            wybor = input("Wybierz opcję: ")
+            choice = input("Choose an option: ")
 
-            if wybor == "1":
-                print("Wybierz rodzaj zdarzenia:")
-                print("1 - Wypadek")
-                print("2 - Pożar wewnętrzny")
-                print("3 - Pożar zewnętrzny")
-                print("4 - Poszukiwanie osoby zaginionej")
-                print("5 - Sprawdzenie monitoringu")
-                print("6 - Zabezpieczenie rejonu działań PSP")
-                print("7 - Ćwiczenia")
-                print("8 - Inne")
+            if choice == "1":
+                print("Choose incident type:")
+                print("1 - Accident")
+                print("2 - Indoor Fire")
+                print("3 - Outdoor Fire")
+                print("4 - Missing Person Search")
+                print("5 - Surveillance Check")
+                print("6 - PSP Operational Zone Security")
+                print("7 - Training")
+                print("8 - Other")
 
-                wybor_zdarzenia = input("Wybierz numer rodzaju zdarzenia: ")
+                incident_choice = input("Select incident type number: ")
 
-                if wybor_zdarzenia == "8":
-                    rodzaj_zdarzenia = input("Podaj inny rodzaj zdarzenia: ")
-                    komentarz = input("Dodaj komentarz: ")
-                    rodzaj_zdarzenia += f" ({komentarz})"
-                elif wybor_zdarzenia in ["1", "2", "3", "4", "5", "6", "7"]:
-                    rodzaj_zdarzenia = {
-                        "1": "Wypadek",
-                        "2": "Pożar wewnętrzny",
-                        "3": "Pożar zewnętrzny",
-                        "4": "Poszukiwanie osoby zaginionej",
-                        "5": "Sprawdzenie monitoringu",
-                        "6": "Zabezpieczenie rejonu działań PSP",
-                        "7": "Ćwiczenia"
-                    }[wybor_zdarzenia]
+                if incident_choice == "8":
+                    incident_type = input("Enter a different incident type: ")
+                    comment = input("Add a comment: ")
+                    incident_type += f" ({comment})"
+                elif incident_choice in ["1", "2", "3", "4", "5", "6", "7"]:
+                    incident_type = {
+                        "1": "Accident",
+                        "2": "Indoor Fire",
+                        "3": "Outdoor Fire",
+                        "4": "Missing Person Search",
+                        "5": "Surveillance Check",
+                        "6": "PSP Operational Zone Security",
+                        "7": "Training"
+                    }[incident_choice]
                 else:
-                    print("Niepoprawny wybór. Spróbuj ponownie.")
+                    print("Invalid choice. Please try again.")
                     continue
 
-                miejscowosc = input("Podaj miejscowość: ")
-                data = wprowadz_date()
+                location = input("Enter location: ")
+                date = enter_date()
 
-                print("Wybierz pojazdy:")
-                print("1 - GLBA 0,4/2")
-                print("2 - GBA 2,5/16")
+                print("Choose vehicles:")
+                print("1 - GLBA 0.4/2")
+                print("2 - GBA 2.5/16")
                 print("3 - GCBA 5/32")
-                print("4 - D (drabina)")
-                print("5 - H (podnośnik hydrauliczny)")
+                print("4 - Ladder (D)")
+                print("5 - Hydraulic Lift (H)")
 
-                wybrane_pojazdy = []
+                selected_vehicles = []
                 while True:
-                    wybor_pojazdu = input("Wybierz numer pojazdu (wpisz 'koniec' jeśli zakończyłeś wybór): ")
-                    if wybor_pojazdu.lower() == "koniec":
+                    vehicle_choice = input("Select vehicle number (type 'end' when done): ")
+                    if vehicle_choice.lower() == "end":
                         break
-                    elif wybor_pojazdu in ["1", "2", "3", "4", "5"]:
-                        if wybor_pojazdu == "1":
-                            wybrane_pojazdy.append("GLBA 0,4/2")
-                        elif wybor_pojazdu == "2":
-                            wybrane_pojazdy.append("GBA 2,5/16")
-                        elif wybor_pojazdu == "3":
-                            wybrane_pojazdy.append("GCBA 5/32")
-                        elif wybor_pojazdu == "4":
-                            wybrane_pojazdy.append("D (drabina)")
-                        elif wybor_pojazdu == "5":
-                            wybrane_pojazdy.append("H (podnośnik hydrauliczny)")
+                    elif vehicle_choice in ["1", "2", "3", "4", "5"]:
+                        vehicle_dict = {
+                            "1": "GLBA 0.4/2",
+                            "2": "GBA 2.5/16",
+                            "3": "GCBA 5/32",
+                            "4": "Ladder (D)",
+                            "5": "Hydraulic Lift (H)"
+                        }
+                        selected_vehicles.append(vehicle_dict[vehicle_choice])
                     else:
-                        print("Niepoprawny wybór. Spróbuj ponownie.")
+                        print("Invalid choice. Please try again.")
 
-                print("Wybierz warunki atmosferyczne:")
-                print("1 - Wiatr")
-                print("2 - Deszcz")
-                print("3 - Śnieg")
-                print("4 - Mróz")
-                print("5 - Warunki ok")
+                print("Choose weather conditions:")
+                print("1 - Wind")
+                print("2 - Rain")
+                print("3 - Snow")
+                print("4 - Frost")
+                print("5 - Normal Conditions")
 
-                wybrane_warunki = []
+                selected_conditions = []
                 while True:
-                    wybor_warunkow = input("Wybierz numer warunków atmosferycznych (wpisz 'koniec' jeśli zakończyłeś wybór): ")
-                    if wybor_warunkow.lower() == "koniec":
+                    weather_choice = input("Select weather condition number (type 'end' when done): ")
+                    if weather_choice.lower() == "end":
                         break
-                    elif wybor_warunkow == "5":
-                        wybrane_warunki = ["Warunki ok"]
+                    elif weather_choice == "5":
+                        selected_conditions = ["Normal Conditions"]
                         break
-                    elif wybor_warunkow in ["1", "2", "3", "4"]:
-                        if wybor_warunkow == "1":
-                            wybrane_warunki.append("Wiatr")
-                        elif wybor_warunkow == "2":
-                            wybrane_warunki.append("Deszcz")
-                        elif wybor_warunkow == "3":
-                            wybrane_warunki.append("Śnieg")
-                        elif wybor_warunkow == "4":
-                            wybrane_warunki.append("Mróz")
+                    elif weather_choice in ["1", "2", "3", "4"]:
+                        condition_dict = {
+                            "1": "Wind",
+                            "2": "Rain",
+                            "3": "Snow",
+                            "4": "Frost"
+                        }
+                        selected_conditions.append(condition_dict[weather_choice])
                     else:
-                        print("Niepoprawny wybór. Spróbuj ponownie.")
+                        print("Invalid choice. Please try again.")
 
-                temperatura = input("Podaj temperaturę: ")
+                temperature = input("Enter temperature: ")
 
-                print("Podsumowanie wprowadzonych danych:")
-                print(f"Rodzaj zdarzenia: {rodzaj_zdarzenia}")
-                print(f"Miejscowość: {miejscowosc}")
-                print(f"Data: {data}")
-                print(f"Pojazdy: {', '.join(wybrane_pojazdy)}")
-                print(f"Warunki atmosferyczne: {', '.join(wybrane_warunki)}")
+                print("Summary of entered data:")
+                print(f"Incident Type: {incident_type}")
+                print(f"Location: {location}")
+                print(f"Date: {date}")
+                print(f"Vehicles: {', '.join(selected_vehicles)}")
+                print(f"Weather Conditions: {', '.join(selected_conditions)}")
 
-                nowa_akcja = AkcjaRatownicza(rodzaj_zdarzenia, wybrane_pojazdy, miejscowosc, data, wybrane_warunki, temperatura, "")
-                akcje_ratownicze.append(nowa_akcja)
-                print("Dodano nową akcję ratowniczą.")
+                new_action = RescueAction(incident_type, selected_vehicles, location, date, selected_conditions, temperature, "")
+                rescue_actions.append(new_action)
+                print("New rescue action added.")
 
-            elif wybor == "2":
-                for akcja in akcje_ratownicze:
-                    akcja.wyswietl_informacje()
+            elif choice == "2":
+                for action in rescue_actions:
+                    action.display_info()
 
-            elif wybor == "3":
-                zapisz_do_excel(akcje_ratownicze)
-                print("Dane zapisane do pliku Excel.")
+            elif choice == "3":
+                save_to_excel(rescue_actions)
+                print("Data saved to Excel file.")
 
-            elif wybor == "4":
+            elif choice == "4":
                 break
 
             else:
-                print("Niepoprawny wybór. Spróbuj ponownie.")
+                print("Invalid choice. Please try again.")
 
     except KeyboardInterrupt:
-        print("\nPrzerwano przez użytkownika. Zamykanie programu.")
+        print("\nInterrupted by user. Closing program.")
